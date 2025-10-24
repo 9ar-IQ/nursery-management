@@ -1,4 +1,4 @@
-/ api/index.js - Serverless API for Vercel
+// api/index.js - Serverless API for Vercel
 const { MongoClient, ObjectId } = require('mongodb');
 
 let cachedDb = null;
@@ -42,7 +42,15 @@ module.exports = async (req, res) => {
       const user = await db.collection('users').findOne({ username, password, status: 'Active' });
       
       if (user) {
-        return res.status(200).json({ success: true, user: { id: user._id, username: user.username, role: user.role } });
+        return res.status(200).json({ 
+          success: true, 
+          user: { 
+            id: user._id, 
+            username: user.username, 
+            role: user.role,
+            permissions: user.permissions || {}
+          } 
+        });
       } else {
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
@@ -91,13 +99,15 @@ module.exports = async (req, res) => {
 
     // Get system settings
     if (collection === 'settings' && action === 'get') {
-      const settings = await db.collection('settings').findOne({ type: 'system' });
+      let settings = await db.collection('settings').findOne({ type: 'system' });
       if (!settings) {
         // Create default settings if not exist
         const defaultSettings = {
           type: 'system',
           nurseryName: "My Nursery",
           currency: "$",
+          country: "United States",
+          timezone: "America/New_York",
           closingPeriodDate: null,
           incomeRefStart: 1000,
           expenseRefStart: 1000,
@@ -106,10 +116,11 @@ module.exports = async (req, res) => {
           incomeCategories: ["Student Subscription", "Meals Subscription", "Late Club", "Bus", "Activity Club"],
           expenseCategories: ["Salaries", "Rent", "Utilities", "Supplies", "Maintenance", "Food", "Transportation", "Insurance", "Taxes", "Other"],
           incomePaymentMethods: ["Cash", "POS"],
-          expensePaymentMethods: ["Cash", "POS"]
+          expensePaymentMethods: ["Cash", "POS"],
+          incomeSources: ["Student", "Bank", "Staff Advance", "Others"]
         };
         await db.collection('settings').insertOne(defaultSettings);
-        return res.status(200).json({ success: true, data: defaultSettings });
+        settings = defaultSettings;
       }
       return res.status(200).json({ success: true, data: settings });
     }
@@ -125,7 +136,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: true, data: result });
     }
 
-    // Initialize default admin user if no users exist
+    // Initialize default admin user ONLY if no users exist
     if (collection === 'users' && action === 'initialize') {
       const userCount = await db.collection('users').countDocuments();
       if (userCount === 0) {
@@ -134,10 +145,18 @@ module.exports = async (req, res) => {
           password: 'admin123',
           role: 'Admin',
           status: 'Active',
-          createdDate: new Date().toISOString().split('T')[0]
+          createdDate: new Date().toISOString().split('T')[0],
+          permissions: {
+            students: { view: true, add: true, edit: true, delete: true },
+            transactions: { view: true, add: true, edit: true, delete: true },
+            users: { view: true, add: true, edit: true, delete: true },
+            reports: { view: true, export: true },
+            settings: { view: true, edit: true }
+          }
         });
+        return res.status(200).json({ success: true, message: 'Default admin created' });
       }
-      return res.status(200).json({ success: true, message: 'Initialized' });
+      return res.status(200).json({ success: true, message: 'Users already exist' });
     }
 
     return res.status(400).json({ success: false, message: 'Invalid request' });
