@@ -604,8 +604,8 @@
             const month = new Date().getMonth(), year = new Date().getFullYear();
             const income = expenses.filter(e => e.inOut === 'In' && new Date(e.date).getMonth() === month && new Date(e.date).getFullYear() === year).reduce((sum, e) => sum + parseFloat(e.amount), 0);
             const expense = expenses.filter(e => e.inOut === 'Out' && new Date(e.date).getMonth() === month && new Date(e.date).getFullYear() === year).reduce((sum, e) => sum + parseFloat(e.amount), 0);
-            document.getElementById('monthlyIncome').textContent = `${systemSettings.currency || '}${income.toFixed(2)}`;
-            document.getElementById('monthlyExpenses').textContent = `${systemSettings.currency || '}${expense.toFixed(2)}`;
+            document.getElementById('monthlyIncome').textContent = `${systemSettings.currency || '$'}${income.toFixed(2)}`;
+            document.getElementById('monthlyExpenses').textContent = `${systemSettings.currency || '$'}${expense.toFixed(2)}`;
             document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'Active').length;
         }
 
