@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,13 +63,13 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label>Username</label>
-                    <input type="text" id="username" required>
+                    <input type="text" id="loginUsername" name="username" required autocomplete="username">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="password" required>
+                    <input type="password" id="loginPassword" name="password" required autocomplete="current-password">
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="loginButton">Login</button>
             </form>
         </div>
     </div>
@@ -445,34 +446,10 @@
         let dateTimeInterval = null;
 
         const ROLE_PRESETS = {
-            'Admin': {
-                students: { view: true, add: true, edit: true, delete: true },
-                transactions: { view: true, add: true, edit: true, delete: true },
-                users: { view: true, add: true, edit: true, delete: true },
-                reports: { view: true, export: true },
-                settings: { view: true, edit: true }
-            },
-            'Manager': {
-                students: { view: true, add: true, edit: true, delete: false },
-                transactions: { view: true, add: true, edit: true, delete: false },
-                users: { view: true, add: false, edit: false, delete: false },
-                reports: { view: true, export: true },
-                settings: { view: true, edit: false }
-            },
-            'Logger': {
-                students: { view: true, add: true, edit: true, delete: false },
-                transactions: { view: true, add: true, edit: true, delete: false },
-                users: { view: false, add: false, edit: false, delete: false },
-                reports: { view: true, export: false },
-                settings: { view: false, edit: false }
-            },
-            'Viewer': {
-                students: { view: true, add: false, edit: false, delete: false },
-                transactions: { view: true, add: false, edit: false, delete: false },
-                users: { view: false, add: false, edit: false, delete: false },
-                reports: { view: true, export: false },
-                settings: { view: false, edit: false }
-            }
+            'Admin': { students: { view: true, add: true, edit: true, delete: true }, transactions: { view: true, add: true, edit: true, delete: true }, users: { view: true, add: true, edit: true, delete: true }, reports: { view: true, export: true }, settings: { view: true, edit: true } },
+            'Manager': { students: { view: true, add: true, edit: true, delete: false }, transactions: { view: true, add: true, edit: true, delete: false }, users: { view: true, add: false, edit: false, delete: false }, reports: { view: true, export: true }, settings: { view: true, edit: false } },
+            'Logger': { students: { view: true, add: true, edit: true, delete: false }, transactions: { view: true, add: true, edit: true, delete: false }, users: { view: false, add: false, edit: false, delete: false }, reports: { view: true, export: false }, settings: { view: false, edit: false } },
+            'Viewer': { students: { view: true, add: false, edit: false, delete: false }, transactions: { view: true, add: false, edit: false, delete: false }, users: { view: false, add: false, edit: false, delete: false }, reports: { view: true, export: false }, settings: { view: false, edit: false } }
         };
 
         async function apiCall(endpoint, options = {}) {
