@@ -19,13 +19,15 @@
 
 ### Step 2: Deploy Files
 Upload all files from this package to your GitHub repository:
+```
 repo/
 ├── api/
-│ └── index.js
+│   └── index.js
 ├── index.html
 ├── package.json
 ├── vercel.json
 └── README.md
+```
 
 ### Step 3: Redeploy on Vercel
 - Push changes to GitHub
