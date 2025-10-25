@@ -1,0 +1,11 @@
+{
+  "name": "nursery-management-system",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "mongodb": "^6.5.0"
+  }
+}
