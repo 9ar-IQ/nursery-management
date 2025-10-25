@@ -69,7 +69,6 @@
                     <input type="password" id="password" required>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-                <p style="margin-top: 15px; text-align: center; color: #666; font-size: 12px;">Default: admin / admin123</p>
             </form>
         </div>
     </div>
@@ -313,6 +312,54 @@
                         <option value="On Hold">On Hold</option>
                     </select>
                 </div>
+                <button type="submit" class="btn btn-success" id="btnSubmitStudent">Add Student</button>
+                <button type="button" class="btn btn-secondary" onclick="hideModal('addStudentModal')">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addExpenseModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal" onclick="hideModal('addExpenseModal')">&times;</span>
+            <h3 id="expenseModalTitle">Add Transaction</h3>
+            <form id="addExpenseForm">
+                <input type="hidden" id="editExpenseId">
+                <div class="form-row">
+                    <div class="form-group"><label>Reference</label><input type="text" name="reference" required></div>
+                    <div class="form-group"><label>Date *</label><input type="date" name="date" required></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Transaction Type *</label>
+                        <select name="inOut" id="inOutSelect" required>
+                            <option value="">Select Type</option>
+                            <option value="In">Income</option>
+                            <option value="Out">Expense</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Category *</label>
+                        <select name="type" id="typeSelect" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group hidden" id="incomeSourceGroup">
+                    <label>Income Source</label>
+                    <select name="incomeSource" id="incomeSourceSelect">
+                        <option value="">Select Source</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Amount *</label><input type="number" name="amount" step="0.01" required></div>
+                    <div class="form-group">
+                        <label>Payment Method *</label>
+                        <select name="paymentMethod" id="paymentMethodSelect" required>
+                            <option value="">Select Method</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group"><label>Description (supports Arabic)</label><textarea name="description" rows="3" placeholder="يمكنك الكتابة بالعربية هنا..."></textarea></div>
                 <button type="submit" class="btn btn-success" id="btnSubmitExpense">Add Transaction</button>
                 <button type="button" class="btn btn-secondary" onclick="hideModal('addExpenseModal')">Cancel</button>
             </form>
@@ -517,14 +564,12 @@
         function applyPermissions() {
             const perms = currentUser.permissions || {};
             
-            // Navigation buttons
             document.getElementById('navStudents').disabled = !perms.students?.view;
             document.getElementById('navTransactions').disabled = !perms.transactions?.view;
             document.getElementById('navUsers').disabled = !perms.users?.view;
             document.getElementById('navReports').disabled = !perms.reports?.view;
             document.getElementById('navSettings').disabled = !perms.settings?.view;
             
-            // Action buttons
             if (perms.students) {
                 document.getElementById('btnAddStudent').style.display = perms.students.add ? 'inline-block' : 'none';
             }
@@ -559,104 +604,8 @@
             const month = new Date().getMonth(), year = new Date().getFullYear();
             const income = expenses.filter(e => e.inOut === 'In' && new Date(e.date).getMonth() === month && new Date(e.date).getFullYear() === year).reduce((sum, e) => sum + parseFloat(e.amount), 0);
             const expense = expenses.filter(e => e.inOut === 'Out' && new Date(e.date).getMonth() === month && new Date(e.date).getFullYear() === year).reduce((sum, e) => sum + parseFloat(e.amount), 0);
-            document.getElementById('monthlyIncome').textContent = `${systemSettings.currency || ' id="btnSubmitStudent">Add Student</button>
-                <button type="button" class="btn btn-secondary" onclick="hideModal('addStudentModal')">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="addExpenseModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="hideModal('addExpenseModal')">&times;</span>
-            <h3 id="expenseModalTitle">Add Transaction</h3>
-            <form id="addExpenseForm">
-                <input type="hidden" id="editExpenseId">
-                <div class="form-row">
-                    <div class="form-group"><label>Reference</label><input type="text" name="reference" required></div>
-                    <div class="form-group"><label>Date *</label><input type="date" name="date" required></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Transaction Type *</label>
-                        <select name="inOut" id="inOutSelect" required>
-                            <option value="">Select Type</option>
-                            <option value="In">Income</option>
-                            <option value="Out">Expense</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select name="type" id="typeSelect" required>
-                            <option value="">Select Category</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group" id="incomeSourceGroup" class="hidden">
-                    <label>Income Source</label>
-                    <select name="incomeSource" id="incomeSourceSelect">
-                        <option value="">Select Source</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Amount *</label><input type="number" name="amount" step="0.01" required></div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select name="paymentMethod" id="paymentMethodSelect" required>
-                            <option value="">Select Method</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group"><label>Description (supports Arabic)</label><textarea name="description" rows="3" placeholder="يمكنك الكتابة بالعربية هنا..."></textarea></div>
-                <button type="submit" class="btn btn-success"}${income.toFixed(2)}`;
-            document.getElementById('monthlyExpenses').textContent = `${systemSettings.currency || ' id="btnSubmitStudent">Add Student</button>
-                <button type="button" class="btn btn-secondary" onclick="hideModal('addStudentModal')">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="addExpenseModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="hideModal('addExpenseModal')">&times;</span>
-            <h3 id="expenseModalTitle">Add Transaction</h3>
-            <form id="addExpenseForm">
-                <input type="hidden" id="editExpenseId">
-                <div class="form-row">
-                    <div class="form-group"><label>Reference</label><input type="text" name="reference" required></div>
-                    <div class="form-group"><label>Date *</label><input type="date" name="date" required></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Transaction Type *</label>
-                        <select name="inOut" id="inOutSelect" required>
-                            <option value="">Select Type</option>
-                            <option value="In">Income</option>
-                            <option value="Out">Expense</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select name="type" id="typeSelect" required>
-                            <option value="">Select Category</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group" id="incomeSourceGroup" class="hidden">
-                    <label>Income Source</label>
-                    <select name="incomeSource" id="incomeSourceSelect">
-                        <option value="">Select Source</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Amount *</label><input type="number" name="amount" step="0.01" required></div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select name="paymentMethod" id="paymentMethodSelect" required>
-                            <option value="">Select Method</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group"><label>Description (supports Arabic)</label><textarea name="description" rows="3" placeholder="يمكنك الكتابة بالعربية هنا..."></textarea></div>
-                <button type="submit" class="btn btn-success"}${expense.toFixed(2)}`;
+            document.getElementById('monthlyIncome').textContent = `${systemSettings.currency || '}${income.toFixed(2)}`;
+            document.getElementById('monthlyExpenses').textContent = `${systemSettings.currency || '}${expense.toFixed(2)}`;
             document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'Active').length;
         }
 
@@ -781,55 +730,7 @@
                     <td>${e.reference}</td>
                     <td>${e.date}</td>
                     <td>${e.type}</td>
-                    <td>${systemSettings.currency || ' id="btnSubmitStudent">Add Student</button>
-                <button type="button" class="btn btn-secondary" onclick="hideModal('addStudentModal')">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="addExpenseModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="hideModal('addExpenseModal')">&times;</span>
-            <h3 id="expenseModalTitle">Add Transaction</h3>
-            <form id="addExpenseForm">
-                <input type="hidden" id="editExpenseId">
-                <div class="form-row">
-                    <div class="form-group"><label>Reference</label><input type="text" name="reference" required></div>
-                    <div class="form-group"><label>Date *</label><input type="date" name="date" required></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Transaction Type *</label>
-                        <select name="inOut" id="inOutSelect" required>
-                            <option value="">Select Type</option>
-                            <option value="In">Income</option>
-                            <option value="Out">Expense</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select name="type" id="typeSelect" required>
-                            <option value="">Select Category</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group" id="incomeSourceGroup" class="hidden">
-                    <label>Income Source</label>
-                    <select name="incomeSource" id="incomeSourceSelect">
-                        <option value="">Select Source</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Amount *</label><input type="number" name="amount" step="0.01" required></div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select name="paymentMethod" id="paymentMethodSelect" required>
-                            <option value="">Select Method</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group"><label>Description (supports Arabic)</label><textarea name="description" rows="3" placeholder="يمكنك الكتابة بالعربية هنا..."></textarea></div>
-                <button type="submit" class="btn btn-success"}${parseFloat(e.amount).toFixed(2)}</td>
+                    <td>${systemSettings.currency || '}${parseFloat(e.amount).toFixed(2)}</td>
                     <td style="color: ${e.inOut === 'In' ? 'green' : 'red'}">${e.inOut === 'In' ? 'Income' : 'Expense'}</td>
                     <td>${e.description || '-'}</td>
                     <td>${actions || 'No actions'}</td>
@@ -859,55 +760,7 @@
 
         function loadSettingsForm() {
             document.getElementById('nurseryName').value = systemSettings.nurseryName || '';
-            document.getElementById('currency').value = systemSettings.currency || ' id="btnSubmitStudent">Add Student</button>
-                <button type="button" class="btn btn-secondary" onclick="hideModal('addStudentModal')">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="addExpenseModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="hideModal('addExpenseModal')">&times;</span>
-            <h3 id="expenseModalTitle">Add Transaction</h3>
-            <form id="addExpenseForm">
-                <input type="hidden" id="editExpenseId">
-                <div class="form-row">
-                    <div class="form-group"><label>Reference</label><input type="text" name="reference" required></div>
-                    <div class="form-group"><label>Date *</label><input type="date" name="date" required></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Transaction Type *</label>
-                        <select name="inOut" id="inOutSelect" required>
-                            <option value="">Select Type</option>
-                            <option value="In">Income</option>
-                            <option value="Out">Expense</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select name="type" id="typeSelect" required>
-                            <option value="">Select Category</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group" id="incomeSourceGroup" class="hidden">
-                    <label>Income Source</label>
-                    <select name="incomeSource" id="incomeSourceSelect">
-                        <option value="">Select Source</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Amount *</label><input type="number" name="amount" step="0.01" required></div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select name="paymentMethod" id="paymentMethodSelect" required>
-                            <option value="">Select Method</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group"><label>Description (supports Arabic)</label><textarea name="description" rows="3" placeholder="يمكنك الكتابة بالعربية هنا..."></textarea></div>
-                <button type="submit" class="btn btn-success";
+            document.getElementById('currency').value = systemSettings.currency || ';
             document.getElementById('country').value = systemSettings.country || 'United States';
             document.getElementById('timezone').value = systemSettings.timezone || 'America/New_York';
             document.getElementById('incomeSources').value = (systemSettings.incomeSources || []).join('\n');
@@ -1232,7 +1085,6 @@
             
             const filtered = expenses.filter(e => e.date >= fromDate && e.date <= toDate);
             
-            // Prepare data with Arabic support
             const data = filtered.map(e => ({
                 'Reference': e.reference,
                 'Date': e.date,
@@ -1244,26 +1096,22 @@
                 'Description': e.description || '-'
             }));
             
-            // Create worksheet with UTF-8 support
             const ws = XLSX.utils.json_to_sheet(data);
             
-            // Set column widths
             ws['!cols'] = [
-                {wch: 15}, // Reference
-                {wch: 12}, // Date
-                {wch: 20}, // Type
-                {wch: 12}, // Amount
-                {wch: 10}, // In/Out
-                {wch: 15}, // Payment Method
-                {wch: 15}, // Income Source
-                {wch: 40}  // Description (wider for Arabic text)
+                {wch: 15},
+                {wch: 12},
+                {wch: 20},
+                {wch: 12},
+                {wch: 10},
+                {wch: 15},
+                {wch: 15},
+                {wch: 40}
             ];
             
-            // Create workbook
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, 'Transactions');
             
-            // Add summary sheet
             const income = filtered.filter(e => e.inOut === 'In').reduce((sum, e) => sum + parseFloat(e.amount), 0);
             const expense = filtered.filter(e => e.inOut === 'Out').reduce((sum, e) => sum + parseFloat(e.amount), 0);
             
@@ -1278,63 +1126,14 @@
             const ws_summary = XLSX.utils.aoa_to_sheet(summary);
             XLSX.utils.book_append_sheet(wb, ws_summary, 'Summary');
             
-            // Export with UTF-8 encoding for Arabic support
             XLSX.writeFile(wb, `Nursery_Report_${fromDate}_to_${toDate}.xlsx`, { 
                 bookType: 'xlsx',
                 type: 'binary',
-                codepage: 65001 // UTF-8 encoding
+                codepage: 65001
             });
             
             showAlert('reportsAlert', 'Report exported successfully!', 'success');
         }
     </script>
 </body>
-</html> id="btnSubmitStudent">Add Student</button>
-                <button type="button" class="btn btn-secondary" onclick="hideModal('addStudentModal')">Cancel</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="addExpenseModal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal" onclick="hideModal('addExpenseModal')">&times;</span>
-            <h3 id="expenseModalTitle">Add Transaction</h3>
-            <form id="addExpenseForm">
-                <input type="hidden" id="editExpenseId">
-                <div class="form-row">
-                    <div class="form-group"><label>Reference</label><input type="text" name="reference" required></div>
-                    <div class="form-group"><label>Date *</label><input type="date" name="date" required></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Transaction Type *</label>
-                        <select name="inOut" id="inOutSelect" required>
-                            <option value="">Select Type</option>
-                            <option value="In">Income</option>
-                            <option value="Out">Expense</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Category *</label>
-                        <select name="type" id="typeSelect" required>
-                            <option value="">Select Category</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group" id="incomeSourceGroup" class="hidden">
-                    <label>Income Source</label>
-                    <select name="incomeSource" id="incomeSourceSelect">
-                        <option value="">Select Source</option>
-                    </select>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>Amount *</label><input type="number" name="amount" step="0.01" required></div>
-                    <div class="form-group">
-                        <label>Payment Method *</label>
-                        <select name="paymentMethod" id="paymentMethodSelect" required>
-                            <option value="">Select Method</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group"><label>Description (supports Arabic)</label><textarea name="description" rows="3" placeholder="يمكنك الكتابة بالعربية هنا..."></textarea></div>
-                <button type="submit" class="btn btn-success"
+</html>
