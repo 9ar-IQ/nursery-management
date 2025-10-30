@@ -1,8 +1,8 @@
+// pages/students.js
 import { useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import axios from 'axios';
 
-// Modal for Create/Edit student
 function StudentModal({ visible, onClose, onSave, student }) {
   const [form, setForm] = useState({
     name: '',
@@ -14,30 +14,17 @@ function StudentModal({ visible, onClose, onSave, student }) {
   });
 
   useEffect(() => {
-    if (student) {
-      setForm(student);
-    } else {
-      setForm({
-        name: '',
-        guardian: '',
-        mobile: '',
-        class: '',
-        allergies: '',
-        status: 'active'
-      });
-    }
+    setForm(student || {
+      name: '',
+      guardian: '',
+      mobile: '',
+      class: '',
+      allergies: '',
+      status: 'active'
+    });
   }, [student]);
 
   if (!visible) return null;
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave(form);
-  };
 
   return (
     <div style={{
@@ -46,21 +33,21 @@ function StudentModal({ visible, onClose, onSave, student }) {
     }}>
       <div style={{ background: 'white', padding: 32, borderRadius: 6, width: 400 }}>
         <h2>{student ? 'Edit Student' : 'Add Student'}</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={e => { e.preventDefault(); onSave(form); }}>
           {['name','guardian','mobile','class','allergies'].map(field =>
             <div key={field} style={{ marginBottom: 12 }}>
               <input
                 name={field}
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                 value={form[field] || ''}
-                onChange={handleChange}
+                onChange={e => setForm({ ...form, [field]: e.target.value })}
                 required={['name','guardian','mobile','class'].includes(field)}
                 style={{ width: '100%', padding: 8 }}
               />
             </div>
           )}
           <div style={{ marginBottom: 12 }}>
-            <select name="status" value={form.status} onChange={handleChange} style={{ width: '100%', padding: 8 }}>
+            <select name="status" value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} style={{ width: '100%', padding: 8 }}>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
               <option value="graduated">Graduated</option>
@@ -87,12 +74,6 @@ export default function Students() {
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
 
-  // Fetch students from API
-  useEffect(() => {
-    fetchStudents();
-    // eslint-disable-next-line
-  }, [page]);
-
   const fetchStudents = async () => {
     setLoading(true);
     const token = localStorage.getItem('token');
@@ -108,7 +89,9 @@ export default function Students() {
     }
   };
 
-  // Save/create/edit student
+  useEffect(() => { fetchStudents(); }, [page]);
+  useEffect(() => { if (!loading) fetchStudents(); }, [search]);
+
   const saveStudent = async (form) => {
     setError('');
     const token = localStorage.getItem('token');
@@ -130,7 +113,6 @@ export default function Students() {
     }
   };
 
-  // Delete student
   const deleteStudent = async (id) => {
     const token = localStorage.getItem('token');
     if (window.confirm('Delete this student?')) {
